@@ -1,0 +1,365 @@
+/* ==========================================================================
+   RESET & SYSTEM BASE
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-hint: #94a3b8;
+  --border-color: #e2e8f0;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --alert-bg: #fef2f2;
+  --alert-text: #991b1b;
+  --alert-border: #fee2e2;
+
+  /* HDI Tier Palette */
+  --tier-low: #ef4444;
+  --tier-medium: #f59e0b;
+  --tier-high: #10b981;
+  --tier-veryhigh: #3b82f6;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  padding: 2rem 1rem;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.site-header {
+  text-align: center;
+}
+.eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+.headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 2.25rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+.subhead {
+  max-width: 600px;
+  margin: 0 auto;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   LAYOUT GRID
+   ========================================================================== */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .main-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+/* ==========================================================================
+   CARDS & COMMON FORM COMPONENTS
+   ========================================================================== */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+.card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-hint);
+  margin-bottom: 1.5rem;
+}
+
+.alert {
+  background-color: var(--alert-bg);
+  border: 1px solid var(--alert-border);
+  color: var(--alert-text);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  align-items: flex-start;
+}
+.alert-icon {
+  font-weight: bold;
+}
+
+.hdi-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+.field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--text-hint);
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-wrap input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: inherit;
+  outline: none;
+  background-color: #fff;
+}
+.input-wrap input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.input-prefix {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-hint);
+  pointer-events: none;
+}
+.input-wrap input:has(+ .input-suffix), 
+.input-wrap .input-prefix + input {
+  padding-left: 1.75rem;
+}
+.input-suffix {
+  position: absolute;
+  right: 0.75rem;
+  color: var(--text-hint);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.predict-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+.predict-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* ==========================================================================
+   GAUGE DISPLAY PANEL
+   ========================================================================== */
+.result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gauge-wrap {
+  position: relative;
+  width: 240px;
+  height: 120px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.gauge-arc {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--tier-low) 0deg, 
+    var(--tier-medium) 99deg, 
+    var(--tier-high) 126deg, 
+    var(--tier-veryhigh) 144deg, 
+    #e2e8f0 180deg
+  );
+  transform: rotate(-90deg);
+}
+.gauge-hole {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 192px;
+  height: 192px;
+  background-color: var(--bg-card);
+  border-radius: 50%;
+  z-index: 2;
+}
+.gauge-needle {
+  position: absolute;
+  bottom: 50%;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 96px;
+  background-color: var(--text-main);
+  border-radius: 2px;
+  transform-origin: bottom center;
+  z-index: 4;
+}
+.gauge-pivot {
+  position: absolute;
+  bottom: calc(50% - 6px);
+  left: calc(50% - 6px);
+  width: 12px;
+  height: 12px;
+  background-color: var(--text-main);
+  border-radius: 50%;
+  z-index: 5;
+}
+
+.gauge-readout {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 3;
+}
+.gauge-number {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.gauge-number--empty {
+  color: var(--text-hint);
+}
+.gauge-label {
+  font-size: 0.75rem;
+  color: var(--text-hint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   CLASSIFICATIONS & LEGENDS
+   ========================================================================== */
+.classification {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+.classification--low { background-color: #fef2f2; color: var(--tier-low); }
+.classification--medium { background-color: #fffbeb; color: var(--tier-medium); }
+.classification--high { background-color: #ecfdf5; color: var(--tier-high); }
+.classification--veryhigh { background-color: #eff6ff; color: var(--tier-veryhigh); }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.classification-note, .result-empty-state {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 280px;
+  margin-bottom: 1.5rem;
+}
+
+.legend {
+  list-style: none;
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--text-muted);
+}
+.dot--low { background-color: var(--tier-low); }
+.dot--medium { background-color: var(--tier-medium); }
+.dot--high { background-color: var(--tier-high); }
+.dot--veryhigh { background-color: var(--tier-veryhigh); }
+.legend-range {
+  margin-left: auto;
+  color: var(--text-hint);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.site-footer {
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-hint);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

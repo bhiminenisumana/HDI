@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HDI Predictor — A Comprehensive Measure of Well-Being</title>
+<meta name="description" content="Predict a country's Human Development Index from four socio-economic indicators using a trained Linear Regression model.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="eyebrow">A Comprehensive Measure of Well-Being</p>
+      <h1 class="headline">Human Development Index Predictor</h1>
+      <p class="subhead">
+        Enter four socio-economic indicators and the model will estimate a country's
+        HDI score — the metric the UN uses to rank human progress beyond income alone.
+      </p>
+    </div>
+  </header>
+
+  <main class="main-grid">
+
+    <section class="card form-card" aria-labelledby="form-title">
+      <h2 id="form-title" class="card-title">Indicators</h2>
+      <p class="card-subtitle">All four fields are required.</p>
+
+      {% if error %}
+      <div class="alert" role="alert">
+        <span class="alert-icon">!</span>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <form action="/predict" method="POST" class="hdi-form" novalidate>
+
+        <div class="field">
+          <label for="life_expectancy">Life Expectancy</label>
+          <div class="input-wrap">
+            <input
+              type="number" step="0.01" min="0" max="100"
+              id="life_expectancy" name="life_expectancy"
+              placeholder="e.g. 72.5"
+              value="{{ form_values.life_expectancy if form_values else '' }}"
+              required>
+            <span class="input-suffix">years</span>
+          </div>
+          <p class="field-hint">Typical range across countries: 50–85 years</p>
+        </div>
+
+        <div class="field">
+          <label for="mean_yr_school">Mean Years of Schooling</label>
+          <div class="input-wrap">
+            <input
+              type="number" step="0.01" min="0" max="25"
+              id="mean_yr_school" name="mean_yr_school"
+              placeholder="e.g. 9.2"
+              value="{{ form_values.mean_yr_school if form_values else '' }}"
+              required>
+            <span class="input-suffix">years</span>
+          </div>
+          <p class="field-hint">Typical range: 5–11 years</p>
+        </div>
+
+        <div class="field">
+          <label for="expec_yr_school">Expected Years of Schooling</label>
+          <div class="input-wrap">
+            <input
+              type="number" step="0.01" min="0" max="25"
+              id="expec_yr_school" name="expec_yr_school"
+              placeholder="e.g. 13.1"
+              value="{{ form_values.expec_yr_school if form_values else '' }}"
+              required>
+            <span class="input-suffix">years</span>
+          </div>
+          <p class="field-hint">Typical range: 10–14.5 years</p>
+        </div>
+
+        <div class="field">
+          <label for="gross_inc_percap">GNI per Capita</label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input
+              type="number" step="0.01" min="0" max="250000"
+              id="gross_inc_percap" name="gross_inc_percap"
+              placeholder="e.g. 12500"
+              value="{{ form_values.gross_inc_percap if form_values else '' }}"
+              required>
+          </div>
+          <p class="field-hint">Typical range: $3,400–$22,500</p>
+        </div>
+
+        <button type="submit" class="predict-btn">
+          Predict HDI
+          <svg class="btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <section class="card result-card" aria-labelledby="result-title">
+      <h2 id="result-title" class="card-title">Well-Being Readout</h2>
+
+      <div class="gauge-wrap">
+        <div class="gauge-arc">
+          <div class="gauge-hole"></div>
+          <div
+            class="gauge-needle"
+            id="gaugeNeedle"
+            data-prediction="{{ prediction if prediction is not none else '' }}"
+            style="transform: rotate(-90deg);">
+          </div>
+          <div class="gauge-pivot"></div>
+        </div>
+
+        <div class="gauge-readout">
+          {% if prediction is not none %}
+            <span class="gauge-number" id="gaugeNumber" data-target="{{ prediction }}">{{ prediction }}</span>
+          {% else %}
+            <span class="gauge-number gauge-number--empty">—.———</span>
+          {% endif %}
+          <span class="gauge-label">Predicted HDI Score</span>
+        </div>
+      </div>
+
+      {% if prediction is not none %}
+        {% if prediction < 0.550 %}
+          <div class="classification classification--low">
+            <span class="dot"></span> Low Human Development
+          </div>
+          <p class="classification-note">This score falls in the 0.000–0.549 band, the lowest of the four UNDP tiers.</p>
+        {% elif prediction < 0.700 %}
+          <div class="classification classification--medium">
+            <span class="dot"></span> Medium Human Development
+          </div>
+          <p class="classification-note">This score falls in the 0.550–0.699 band.</p>
+        {% elif prediction < 0.800 %}
+          <div class="classification classification--high">
+            <span class="dot"></span> High Human Development
+          </div>
+          <p class="classification-note">This score falls in the 0.700–0.799 band.</p>
+        {% else %}
+          <div class="classification classification--veryhigh">
+            <span class="dot"></span> Very High Human Development
+          </div>
+          <p class="classification-note">This score falls in the 0.800–1.000 band, the highest UNDP tier.</p>
+        {% endif %}
+      {% else %}
+        <p class="result-empty-state">
+          Fill in the four indicators and select <strong>Predict HDI</strong> to see where a
+          country lands on the well-being scale.
+        </p>
+      {% endif %}
+
+      <ul class="legend">
+        <li><span class="dot dot--low"></span> Low <span class="legend-range">0.000–0.549</span></li>
+        <li><span class="dot dot--medium"></span> Medium <span class="legend-range">0.550–0.699</span></li>
+        <li><span class="dot dot--high"></span> High <span class="legend-range">0.700–0.799</span></li>
+        <li><span class="dot dot--veryhigh"></span> Very High <span class="legend-range">0.800–1.000</span></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>
+        Human Development Index (HDI) Prediction System
+    </p>
+    <p class="footer-meta">
+        A Comprehensive Measure of Well-Being | Machine Learning Based Decision Support System
+    </p>
+</footer>
+
+</div>
+
+<script>
+  (function () {
+    var needle = document.getElementById('gaugeNeedle');
+    var numberEl = document.getElementById('gaugeNumber');
+    if (!needle || !numberEl) return;
+
+    var prediction = parseFloat(needle.dataset.prediction);
+    if (isNaN(prediction)) return;
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var targetDeg = (prediction * 180) - 90;
+
+    if (reduceMotion) {
+      needle.style.transform = 'rotate(' + targetDeg + 'deg)';
+      numberEl.textContent = prediction.toFixed(3);
+      return;
+    }
+
+    needle.style.transition = 'none';
+    needle.style.transform = 'rotate(-90deg)';
+
+    var duration = 900; 
+    var start = null;
+
+    function step(timestamp) {
+      if (!start) start = timestamp;
+      var progress = Math.min((timestamp - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      numberEl.textContent = (eased * prediction).toFixed(3);
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        numberEl.textContent = prediction.toFixed(3);
+      }
+    }
+
+    requestAnimationFrame(function () {
+      needle.style.transition = 'transform 900ms cubic-bezier(0.22, 1, 0.36, 1)';
+      needle.style.transform = 'rotate(' + targetDeg + 'deg)';
+      window.requestAnimationFrame(step);
+    });
+  })();
+</script>
+
+</body>
+</html>
